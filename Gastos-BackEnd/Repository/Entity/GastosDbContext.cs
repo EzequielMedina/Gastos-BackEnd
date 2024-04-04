@@ -173,7 +173,10 @@ public partial class GastosDbContext : DbContext
             entity.ToTable("Persona");
 
             entity.Property(e => e.Personald).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Apellido)
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Contrasena)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Nombre)
