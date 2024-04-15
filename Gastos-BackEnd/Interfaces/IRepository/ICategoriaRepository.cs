@@ -5,5 +5,6 @@ namespace Gastos_BackEnd.Interfaces.IRepository
     public interface ICategoriaRepository
     {
         List<Categorium> GetAllCategoria();
+        Categorium GetByIdCategoria(string categoriaId );
     }
 }

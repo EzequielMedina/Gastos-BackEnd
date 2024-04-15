@@ -26,5 +26,20 @@ namespace Gastos_BackEnd.Repository.DAC.Categoria
 			}
 			return listCategoria;
         }
+
+        public Categorium GetByIdCategoria(string categoriaId)
+        {
+			Categorium? categorium = new Categorium();
+			try
+			{
+				categorium = _context.Categoria.Where(x => x.Categoriald.ToString().Equals(categoriaId)).FirstOrDefault();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error al obtener categorias", ex.Message);
+
+			}
+			return categorium;
+        }
     }
 }

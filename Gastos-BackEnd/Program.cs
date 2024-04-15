@@ -2,14 +2,16 @@ using Gastos_BackEnd.Helpers;
 using Gastos_BackEnd.Interfaces.IRepository;
 using Gastos_BackEnd.Interfaces.IServices;
 using Gastos_BackEnd.Repository.DAC.Categoria;
+using Gastos_BackEnd.Repository.DAC.Gastos;
+using Gastos_BackEnd.Repository.DAC.Ingreso;
+using Gastos_BackEnd.Repository.DAC.Periodo;
+using Gastos_BackEnd.Repository.DAC.Tarjeta;
 using Gastos_BackEnd.Repository.DAC.TiposDeGastos;
 using Gastos_BackEnd.Repository.DAC.User;
 using Gastos_BackEnd.Repository.Entity;
 using Gastos_BackEnd.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -58,6 +60,7 @@ builder.Services.AddAuthentication(d =>
 });
 
 //Interfaces
+
 //User
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -67,7 +70,18 @@ builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 //TiposDeGastos
 builder.Services.AddScoped<ITiposDeGastosRepository, TiposDeGastosRepository>();
 builder.Services.AddScoped<ITiposDeGastosService, TiposDeGastosService>();
-
+//Gastos
+builder.Services.AddScoped<IGastoRepository, GastoRepository>();
+builder.Services.AddScoped<IGastosService, GastoService>();
+//Periodo
+builder.Services.AddScoped<IPeriodoRepository, PeriodoRepository>();
+builder.Services.AddScoped<IPeriodoService, PeriodoService>();
+//Ingreso
+builder.Services.AddScoped<IIngresoRepository, IngresoRepository>();
+builder.Services.AddScoped<IIngresoService, IngresoService>();
+//Tarjeta
+builder.Services.AddScoped<ITarjetaRepository, TarjetaRepository>();
+builder.Services.AddScoped<ITarjetaService, TarjetaService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

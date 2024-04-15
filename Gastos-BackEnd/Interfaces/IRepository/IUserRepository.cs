@@ -7,5 +7,6 @@ namespace Gastos_BackEnd.Interfaces.IRepository
     {
         public Guid NewUser(Persona request);
         public Persona? GetUserByEmail(string email);
+        List<Persona> GetByPersonasGrupo();
     }
 }

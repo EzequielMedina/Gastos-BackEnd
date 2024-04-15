@@ -38,5 +38,20 @@ namespace Gastos_BackEnd.Service
             }
             return response;
         }
+
+        public Categorium GetByIdCategoria( string categoriaId)
+        {
+            Categorium? categorium = new Categorium();
+            try
+            {
+                categorium = _categoriaRepository.GetByIdCategoria(categoriaId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener categorias", ex.Message);
+            }
+
+            return categorium;
+        }
     }
 }

@@ -67,5 +67,22 @@ namespace Gastos_BackEnd.Controllers.User
                 return BadRequest(ex.Message);
             }
         }
+
+        
+        [HttpPost]
+        [Route("GetByPersonasGrupo")]
+        public IActionResult GetByPersonasGrupo([FromBody] string periodoId)
+        {
+            try
+            {
+                ResponseBase responseBase = _usersService.GetByPersonasGrupo(periodoId);
+                return Ok(responseBase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener personas por grupo UserController, " + ex.Message);
+                return BadRequest();
+            }
+        }
     }
 }

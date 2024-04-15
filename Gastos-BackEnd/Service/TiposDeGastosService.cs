@@ -35,5 +35,19 @@ namespace Gastos_BackEnd.Service
             }
             return response;
         }
+
+        public TipoGasto GetByIdTipoGasto(string tipoGastoId)
+        {
+            TipoGasto? tipoGasto = new TipoGasto();
+            try
+            {
+                tipoGasto = _tiposDeGastosRepository.GetByIdTipoGasto(tipoGastoId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener tipos de gastos", ex.Message);
+            }
+            return tipoGasto;
+        }
     }
 }

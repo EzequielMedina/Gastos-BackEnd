@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Gastos_BackEnd.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gastos_BackEnd.Repository.Entity;
 
 public partial class GastosDbContext : DbContext
 {
-    public GastosDbContext()
+    private readonly IConfiguration _configuration;
+    public GastosDbContext(IConfiguration configuration)
     {
+        _configuration = configuration;
     }
 
-    public GastosDbContext(DbContextOptions<GastosDbContext> options)
-        : base(options)
-    {
-    }
+   
 
     public virtual DbSet<Categorium> Categoria { get; set; }
 
@@ -28,6 +26,7 @@ public partial class GastosDbContext : DbContext
     public virtual DbSet<Periodo> Periodos { get; set; }
 
     public virtual DbSet<PeriodoPorGasto> PeriodoPorGastos { get; set; }
+    public virtual DbSet<PersonaPorTarjetum> PersonaPorTarjeta { get; set; }
 
     public virtual DbSet<Persona> Personas { get; set; }
 
@@ -37,10 +36,14 @@ public partial class GastosDbContext : DbContext
 
     public virtual DbSet<TipoGasto> TipoGastos { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=GastosDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 
+        // Obtener la cadena de conexión desde la configuración
+        string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+        // Configurar el contexto de la base de datos con la cadena de conexión
+        optionsBuilder.UseSqlServer(connectionString);
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Categorium>(entity =>
@@ -77,10 +80,6 @@ public partial class GastosDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Gasto__Personald__34C8D9D1");
 
-            entity.HasOne(d => d.Tarjeta).WithMany(p => p.Gastos)
-                .HasForeignKey(d => d.TarjetaId)
-                .HasConstraintName("FK__Gasto__TarjetaId__37A5467C");
-
             entity.HasOne(d => d.TipoGastoldNavigation).WithMany(p => p.Gastos)
                 .HasForeignKey(d => d.TipoGastold)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -102,8 +101,8 @@ public partial class GastosDbContext : DbContext
         modelBuilder.Entity<IngresoPorPersona>(entity =>
         {
             entity
-                .HasNoKey()
-                .ToTable("IngresoPorPersona");
+                .HasKey(d => new { d.Ingresold, d.Personald });
+            entity.ToTable("IngresoPorPersona");
 
             entity.HasOne(d => d.IngresoldNavigation).WithMany()
                 .HasForeignKey(d => d.Ingresold)
@@ -140,20 +139,35 @@ public partial class GastosDbContext : DbContext
             entity.ToTable("Periodo");
 
             entity.Property(e => e.Periodold).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Fecha).HasColumnType("date");
+            entity.Property(e => e.FechaInicio).HasColumnType("date");
+            entity.Property(e => e.FechaFin).HasColumnType("date");
             entity.Property(e => e.Monto).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.NombrePeriodo)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+        modelBuilder.Entity<PersonaPorTarjetum>(entity =>
+        {
+            entity.HasKey(e => e.PersonaPorTarjetaId);
 
-            entity.HasOne(d => d.Tarjeta).WithMany(p => p.Periodos)
+            entity.Property(e => e.PersonaPorTarjetaId).ValueGeneratedNever();
+
+            entity.HasOne(d => d.Persona).WithMany(p => p.PersonaPorTarjeta)
+                .HasForeignKey(d => d.PersonaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PersonaPorTarjeta_Persona");
+
+            entity.HasOne(d => d.Tarjeta).WithMany(p => p.PersonaPorTarjeta)
                 .HasForeignKey(d => d.TarjetaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Periodo__Tarjeta__2E1BDC42");
+                .HasConstraintName("FK_PersonaPorTarjeta_Tarjeta");
         });
-
         modelBuilder.Entity<PeriodoPorGasto>(entity =>
         {
             entity
-                .HasNoKey()
-                .ToTable("PeriodoPorGasto");
+                .HasKey(d => new { d.Periodold, d.GastoId });
+
+                entity.ToTable("PeriodoPorGasto");
 
             entity.HasOne(d => d.Gasto).WithMany()
                 .HasForeignKey(d => d.GastoId)
@@ -186,11 +200,20 @@ public partial class GastosDbContext : DbContext
 
         modelBuilder.Entity<TarjetaPorPeriodo>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("TarjetaPorPeriodo");
+                entity.HasKey(e => e.TarjetaPorPeriodoId).HasName("PK_TarjetaPorPeriodo");
+
+            entity.ToTable("TarjetaPorPeriodo");
+            entity.Property(e => e.TarjetaPorPeriodoId).HasDefaultValueSql("(newid())");
+
+            entity.Property(e => e.CoutaActual).HasColumnName("CoutaActual");
+            entity.Property(e => e.CoutasTotales).HasColumnName("CoutasTotales");
 
             entity.Property(e => e.TarjetaId).HasColumnName("TarjetaId ");
+
+            entity.HasOne(d => d.Gasto).WithMany()
+                .HasForeignKey(d => d.GastoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TarjetaPorPeriodo_Gasto");
 
             entity.HasOne(d => d.PeriodoldNavigation).WithMany()
                 .HasForeignKey(d => d.Periodold)

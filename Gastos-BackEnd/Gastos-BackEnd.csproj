@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Gastos\" />
     <Folder Include="DB\" />
   </ItemGroup>
 

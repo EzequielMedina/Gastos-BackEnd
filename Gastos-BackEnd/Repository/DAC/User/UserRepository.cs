@@ -1,6 +1,7 @@
 ﻿using Gastos_BackEnd.Interfaces.IRepository;
 using Gastos_BackEnd.Models.Request;
 using Gastos_BackEnd.Repository.Entity;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Gastos_BackEnd.Repository.DAC.User
@@ -14,6 +15,21 @@ namespace Gastos_BackEnd.Repository.DAC.User
         {
             _context = gastosDbContext;
         }
+
+        public List<Persona> GetByPersonasGrupo()
+        {
+            List <Persona> listPersona = new List<Persona>();
+            try
+            {
+                 listPersona = _context.Personas.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener personas por grupo, UserRepository" + ex.Message);
+            }
+            return listPersona;
+        }
+
         public Persona? GetUserByEmail(string email)
         {
             Persona persona = null;

@@ -27,5 +27,20 @@ namespace Gastos_BackEnd.Repository.DAC.TiposDeGastos
             }
             return listTipoGasto;
         }
+
+        public TipoGasto GetByIdTipoGasto(string tipoGastoId)
+        {
+            TipoGasto? tipoGasto = new TipoGasto();
+            try
+            {
+                tipoGasto = _context.TipoGastos.Where(x => x.TipoGastold.ToString().Equals(tipoGastoId)).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener tipos de gastos", ex.Message);
+
+            }
+            return tipoGasto;
+        }
     }
 }
