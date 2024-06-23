@@ -45,14 +45,20 @@ namespace Gastos_BackEnd.Service
             return persona;
         }
 
-        public ResponseBase GetByPersonasGrupo(string periodoId)
+        public ResponseBase GetByPersonasGrupo(GrupoPersonabyToken request)
         {
             ResponseBase responseBase = new ResponseBase();
             List<UserGrupoGastoReponse> listUserGrupoGastoReponse = new ();
             try
             {
-                List<Persona> listPersona = _userRepository.GetByPersonasGrupo();
 
+                //obtener persona por token
+                
+
+
+                //llamar a la api para que me traiga las personas por grupo
+
+                List<Persona> listPersona = HttpClientHelper.PostListPersonaByOrganizacion(request.Token).Result;
                 if (listPersona.Count == 0) { 
                    responseBase.StatusCode = 401;
                    responseBase.SetError("No se encontraron personas");
@@ -76,10 +82,10 @@ namespace Gastos_BackEnd.Service
                     //    continue;
                     //}
 
-                    List<PeriodoPorGasto> listPeriodosPorGasto = _periodoService.GetByPeriodoIdPorGasto(periodoId);
+                    List<PeriodoPorGasto> listPeriodosPorGasto = _periodoService.GetByPeriodoIdPorGasto(request.PeriodoId);
                     List<Gasto> gastosFiltrados  = listPeriodosPorGasto.Where(x => x.Gasto.Personald.ToString() == persona.Personald.ToString()).Select(x => x.Gasto).ToList();
 
-                    List<TarjetaPorPeriodo> listTarjetaPorPeriodo = _tarjetaService.GetByPeriodoIdAndPersonaId(periodoId, persona.Personald);
+                    List<TarjetaPorPeriodo> listTarjetaPorPeriodo = _tarjetaService.GetByPeriodoIdAndPersonaId(request.PeriodoId, persona.Personald);
 
                     List<Gasto> gastosPorTarjetas = listTarjetaPorPeriodo.Where(x => x.Gasto.Personald.ToString() == persona.Personald.ToString()).Select(x => x.Gasto).ToList();
 

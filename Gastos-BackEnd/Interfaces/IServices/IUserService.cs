@@ -7,7 +7,7 @@ namespace Gastos_BackEnd.Interfaces.IServices
     public interface IUserService
     {
         Persona? GetByEmailPersona(string email);
-        ResponseBase GetByPersonasGrupo(string periodoId);
+        ResponseBase GetByPersonasGrupo(GrupoPersonabyToken periodoId);
         ResponseBase NewUser(UserRequest request);
         ResponseBase UserAuth(AuthRequest req);
     }

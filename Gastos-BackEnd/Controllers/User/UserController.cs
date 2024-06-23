@@ -71,11 +71,11 @@ namespace Gastos_BackEnd.Controllers.User
         
         [HttpPost]
         [Route("GetByPersonasGrupo")]
-        public IActionResult GetByPersonasGrupo([FromBody] string periodoId)
+        public IActionResult GetByPersonasGrupo([FromBody] GrupoPersonabyToken request)
         {
             try
             {
-                ResponseBase responseBase = _usersService.GetByPersonasGrupo(periodoId);
+                ResponseBase responseBase = _usersService.GetByPersonasGrupo(request);
                 return Ok(responseBase);
             }
             catch (Exception ex)
